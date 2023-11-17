@@ -1,25 +1,46 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import TaskListing from './components/TaskListing';
+import TaskCreation from './components/TaskCreation';
+import TaskEditing from './components/TaskEditing';
 import './App.css';
 
-function App() {
+const App = () => {
+  const [tasks, setTasks] = useState([]);
+
+  const handleTaskCreated = (newTask) => {
+    setTasks((prevTasks) => [...prevTasks, newTask]);
+  };
+
+  const handleTaskDeleted = (updatedTasks) => {
+    setTasks(updatedTasks);
+  };
+
+  const handleTaskUpdated = (updatedTask) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+    );
+  };
+
+    const handleTaskStatusChanged = (taskId) => {
+    // Your logic to update the task status
+    console.log(`Task status changed for task with ID ${taskId}`);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={<TaskListing tasks={tasks} onTaskCreated={handleTaskCreated} onTaskDeleted={handleTaskDeleted} onTaskStatusChanged={handleTaskStatusChanged} />}
+        />
+        <Route path="/taskCreation" element={<TaskCreation onTaskCreated={handleTaskCreated} />} />
+        <Route
+          path="/taskEditing/:taskId"
+          element={<TaskEditing onTaskUpdated={handleTaskUpdated} tasks={tasks} />}
+        />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
